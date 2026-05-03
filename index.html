@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>弾道計算</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+onload="renderMathInElement(document.body);"></script>
+
+<style>
+body{
+    margin:0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    display:block;
+    padding:40px 0;
+}
+
+/* 中央寄せしつつスクロール可能に */
+.wrapper{
+    display:flex;
+    justify-content:center;
+}
+
+.container{
+    width:420px;
+    padding:30px;
+    border-radius:20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    font-weight:300;
+    letter-spacing:2px;
+}
+
+label{
+    display:block;
+    margin-top:12px;
+    font-size:14px;
+    opacity:0.8;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:4px;
+    border:none;
+    border-radius:10px;
+    background: rgba(255,255,255,0.15);
+    color:#fff;
+    outline:none;
+    font-size:14px;
+}
+
+button{
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background: linear-gradient(135deg,#00c6ff,#0072ff);
+    color:#fff;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+.result{
+    margin-top:20px;
+    padding:15px;
+    border-radius:12px;
+    background: rgba(0,0,0,0.3);
+    text-align:center;
+    font-size:18px;
+}
+
+.explanation{
+    margin-top:20px;
+    padding:15px;
+    border-radius:12px;
+    background: rgba(255,255,255,0.05);
+    font-size:14px;
+    line-height:1.6;
+}
+
+.katex-display{
+    overflow:hidden;
+}
+
+.katex{
+    font-size:0.9em;
+}
+
+/* スマホ用にもう少し縮める */
+@media (max-width:480px){
+    .katex-display > .katex{
+        transform:scale(0.75);
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+<div class="container">
+
+<h1>弾道計算</h1>
+
+<label>質量 (kg)</label>
+<input type="number" id="m">
+
+<label>初速度 (m/s)</label>
+<input type="number" id="v">
+
+<label>角度 (°)</label>
+<input type="number" id="theta">
+
+<label>終端速度 (m/s)</label>
+<input type="number" id="syu">
+
+<button onclick="start()">計算</button>
+
+<div class="result">
+    飛距離: <span id="answer">---</span> m<br>
+    時間: <span id="time">---</span> 秒後
+</div>
+
+<div class="explanation">
+
+空気抵抗（速度の2乗比例）を考慮した射程：
+
+$$ X = \frac{m}{k} \ln\left( \frac{k v_{x0}}{m} T + 1 \right) $$
+
+ここで,終端速度を\(v\)として
+$$
+k=\frac{mg}{v^2}
+$$
+
+着弾時間\(T\)は,
+
+$$
+T =
+\frac{l}{2g}
+\ln\left(
+1 + \left(\frac{v_{y0}}{l}\right)^2
++ \sqrt{
+\left(1 + \left(\frac{v_{y0}}{l}\right)^2\right)^2 - 1
+}
+\right)
++ \frac{l}{g}\arctan\left(\frac{v_{y0}}{l}\right)
+$$
+
+なお,\(x,y\)方向の初速度\(v_{x0},v_{y0}\)は、発射する角度\(\theta\)(ラジアン)を用いてこう表せる.
+
+$$v_{x0}=v_0 \cos\theta$$
+
+$$v_{y0}=v_0 \sin\theta$$
+
+</div>
+
+</div>
+</div>
+
+<script>
+const g=9.8;
+
+let m=0;
+let v=0;
+let vx=0;
+let vy=0;
+let k=0;
+
+let l=1;
+
+function start(){
+    m=Number(document.getElementById("m").value);
+    v=Number(document.getElementById("v").value);
+    let theta=Number(document.getElementById("theta").value);
+
+    k=m*g/(document.getElementById("syu").value**2);
+
+    vx=v*Math.cos(theta*Math.PI/180);
+    vy=v*Math.sin(theta*Math.PI/180);
+
+    l=Math.sqrt(m*g/k);
+
+    let subN=sub();
+
+    let T=(l/(2*g))*(Math.log(subN+Math.sqrt(subN**2-1))+(2*Math.atan(vy/l)));
+
+    let X=(m/k)*Math.log((k*vx/m)*T+1);
+
+    document.getElementById("answer").textContent=X.toFixed(3);
+    document.getElementById("time").textContent=T.toFixed(3);
+}
+
+function sub(){
+    return (1+2*((vy/l)**2));
+}
+</script>
+
+</body>
+</html>
