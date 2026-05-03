@@ -9,6 +9,8 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
 onload="renderMathInElement(document.body);"></script>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
     margin:0;
@@ -19,14 +21,14 @@ body{
     padding:40px 0;
 }
 
-/* 中央寄せしつつスクロール可能に */
 .wrapper{
     display:flex;
     justify-content:center;
 }
 
 .container{
-    width:420px;
+    width:90%;
+    max-width:420px;
     padding:30px;
     border-radius:20px;
     background: rgba(255,255,255,0.08);
@@ -104,7 +106,6 @@ button:hover{
     font-size:0.9em;
 }
 
-/* スマホ用にもう少し縮める */
 @media (max-width:480px){
     .katex-display > .katex{
         transform:scale(0.75);
